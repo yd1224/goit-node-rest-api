@@ -22,7 +22,10 @@ export async function getContactById(contactId) {
     const result = contact ? contact : null;
     return result;
   } catch (error) {
-    console.log(error);
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 }
 
@@ -34,7 +37,10 @@ export async function removeContact(contactId) {
     await fs.writeFile(contactsPath, JSON.stringify(contacts));
     return deletedContact;
   } catch (error) {
-    console.log(error);
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 }
 
@@ -47,7 +53,10 @@ export async function addContact(name, email, phone) {
     await fs.writeFile(contactsPath, JSON.stringify(userObj));
     return newUserObj;
   } catch (error) {
-    console.log(error);
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 }
 
@@ -68,6 +77,9 @@ export async function changeContact(id, req) {
     await fs.writeFile(contactsPath, JSON.stringify(userList));
     return changedContact;
   } catch (error) {
-    console.log(error);
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 }

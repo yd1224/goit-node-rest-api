@@ -7,12 +7,34 @@ import { getAllContacts } from "./controllers/contactsControllers.js";
 import { getOneContact } from "./controllers/contactsControllers.js";
 import { updateContact } from "./controllers/contactsControllers.js";
 import { deleteContact } from "./controllers/contactsControllers.js";
+import { getContactById } from "./services/contactsServices.js";
 
 const app = express();
 
 // app.use(morgan("tiny"));
-// app.use(cors());
+
+app.use(cors());
+
 app.use(express.json());
+
+app.use("/api/contacts/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const contact = await getContactById(id);
+    if (!contact) {
+      return res.status(404).json({
+        message: "Not found",
+      });
+    }
+    req.contact = contact;
+    next();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+});
 
 // app.use("/api/contacts", contactsRouter);
 
