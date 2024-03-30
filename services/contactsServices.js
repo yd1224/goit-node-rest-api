@@ -8,7 +8,6 @@ export async function listContacts() {
   try {
     const readResult = await fs.readFile(contactsPath);
     const parsedRes = JSON.parse(readResult);
-
     return parsedRes;
   } catch (error) {
     console.log(error.message);
@@ -33,7 +32,6 @@ export async function removeContact(contactId) {
     const contacts = contactsArr.filter((contact) => contact.id !== contactId);
     const deletedContact = await getContactById(contactId);
     await fs.writeFile(contactsPath, JSON.stringify(contacts));
-
     return deletedContact;
   } catch (error) {
     console.log(error);
@@ -47,8 +45,28 @@ export async function addContact(name, email, phone) {
     const newUserObj = { id, name, email, phone };
     userObj.push(newUserObj);
     await fs.writeFile(contactsPath, JSON.stringify(userObj));
-
     return newUserObj;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function changeContact(id, req) {
+  try {
+    const prevContact = await getContactById(id);
+    const changedContact = {
+      ...prevContact,
+      ...req.body,
+    };
+
+    const userList = await listContacts();
+    const index = userList.findIndex((contact) => contact.id === id);
+    if (index !== -1) {
+      userList[index] = changedContact;
+    }
+
+    await fs.writeFile(contactsPath, JSON.stringify(userList));
+    return changedContact;
   } catch (error) {
     console.log(error);
   }
