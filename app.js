@@ -2,71 +2,34 @@ import express, { json } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import contactsRouter from "./routes/contactsRouter.js";
-import { createContact } from "./controllers/contactsControllers.js";
-import { getAllContacts } from "./controllers/contactsControllers.js";
-import { getOneContact } from "./controllers/contactsControllers.js";
-import { updateContact } from "./controllers/contactsControllers.js";
-import { deleteContact } from "./controllers/contactsControllers.js";
-import { getContactById } from "./services/contactsServices.js";
+import dotenv from "dotenv";
+import { errorHandler } from "./controllers/errorController.js";
+
+dotenv.config();
 
 const app = express();
 
-// app.use(morgan("tiny"));
+if ((process.env.NODE_ENV = "development")) {
+  app.use(morgan("tiny"));
+}
 
 app.use(cors());
 
 app.use(express.json());
 
-app.use("/api/contacts/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const contact = await getContactById(id);
-    if (!contact) {
-      return res.status(404).json({
-        message: "Not found",
-      });
-    }
-    req.contact = contact;
-    next();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: "Internal server error",
-    });
-  }
-});
-
-// app.use("/api/contacts", contactsRouter);
+app.use("/api/contacts", contactsRouter);
 
 // app.use((_, res) => {
 //   res.status(404).json({ message: "Route not found" });
 // });
 
-// app.use((err, req, res, next) => {
-//   const { status = 500, message = "Server error" } = err;
-//   res.status(status).json({ message });
-// });
-//////////////////////////////////////
-app.post("/api/contacts", (req, res) => {
-  createContact(req, res);
+app.all("*", (req, res) => {
+  res.status(404).json({ message: "Resource not found" });
 });
 
-app.get("/api/contacts", (req, res) => {
-  getAllContacts(req, res);
-});
-
-app.get("/api/contacts/:id", (req, res) => {
-  getOneContact(req, res);
-});
-
-app.put("/api/contacts/:id", (req, res) => {
-  updateContact(req, res);
-});
-
-app.delete("/api/contacts/:id", (req, res) => {
-  deleteContact(req, res);
-});
+app.use(errorHandler);
 /////////////////////////////////////
-app.listen(3000, () => {
+const port = process.env.PORT ? +process.env.PORT : 3000;
+app.listen(port, () => {
   console.log("Server is running. Use our API on port: 3000");
 });

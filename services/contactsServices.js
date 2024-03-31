@@ -60,12 +60,12 @@ export async function addContact(name, email, phone) {
   }
 }
 
-export async function changeContact(id, req) {
+export async function changeContact(id, value) {
   try {
     const prevContact = await getContactById(id);
     const changedContact = {
       ...prevContact,
-      ...req.body,
+      ...value,
     };
 
     const userList = await listContacts();
@@ -75,6 +75,7 @@ export async function changeContact(id, req) {
     }
 
     await fs.writeFile(contactsPath, JSON.stringify(userList));
+
     return changedContact;
   } catch (error) {
     console.log(err);
