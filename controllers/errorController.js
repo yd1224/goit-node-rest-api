@@ -10,6 +10,6 @@ export const errorHandler = (err, req, res, next) => {
   res.status(status).json({
     message,
     data,
-    stack,
+    // Here was stack ptroperty
   });
 };
