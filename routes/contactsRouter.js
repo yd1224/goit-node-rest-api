@@ -1,4 +1,3 @@
-import express from "express";
 import {
   getAllContacts,
   getOneContact,
@@ -6,17 +5,19 @@ import {
   createContact,
   updateContact,
 } from "../controllers/contactsControllers.js";
+import { Router } from "express";
+import { checkContactExist } from "../middlewares/contactMiddlewares.js";
 
-const contactsRouter = express.Router();
+const contactsRouter = Router();
 
 contactsRouter.get("/", getAllContacts);
 
-contactsRouter.get("/:id", getOneContact);
+contactsRouter.get("/:id", checkContactExist, getOneContact);
 
-contactsRouter.delete("/:id", deleteContact);
+contactsRouter.delete("/:id", checkContactExist, deleteContact);
 
 contactsRouter.post("/", createContact);
 
-contactsRouter.put("/:id", updateContact);
+contactsRouter.put("/:id", checkContactExist, updateContact);
 
 export default contactsRouter;
