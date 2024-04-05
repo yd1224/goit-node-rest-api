@@ -6,7 +6,11 @@ import {
   updateContact,
 } from "../controllers/contactsControllers.js";
 import { Router } from "express";
-import { checkContactExist } from "../middlewares/contactMiddlewares.js";
+import {
+  checkContactExist,
+  checkCreateContactData,
+  checkUpdateUserData,
+} from "../middlewares/contactMiddlewares.js";
 
 const contactsRouter = Router();
 
@@ -16,8 +20,13 @@ contactsRouter.get("/:id", checkContactExist, getOneContact);
 
 contactsRouter.delete("/:id", checkContactExist, deleteContact);
 
-contactsRouter.post("/", createContact);
+contactsRouter.post("/", checkCreateContactData, createContact);
 
-contactsRouter.put("/:id", checkContactExist, updateContact);
+contactsRouter.put(
+  "/:id",
+  checkContactExist,
+  checkUpdateUserData,
+  updateContact
+);
 
 export default contactsRouter;

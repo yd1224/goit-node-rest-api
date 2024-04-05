@@ -4,61 +4,42 @@ import {
   createContactValidator,
   updateContactValidator,
 } from "../helpers/contactValidator.js";
+import { Contact } from "../models/contactModel.js";
 import { addContact } from "../services/contactsServices.js";
 import { listContacts } from "../services/contactsServices.js";
 import { changeContact } from "../services/contactsServices.js";
 import { removeContact } from "../services/contactsServices.js";
 
 export const getAllContacts = catchAsync(async (req, res) => {
-  const list = await listContacts();
-  res.status(200).json({
-    ...list,
-  });
+  const list = await Contact.find();
+
+  res.status(200).json(list);
 });
 
 export const getOneContact = catchAsync(async (req, res, next) => {
   const { contact } = req;
-  res.status(200).json({
-    ...contact,
-  });
+
+  res.status(200).json(contact);
 });
 
 export const deleteContact = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-  const deletedUser = await removeContact(id);
-  res.status(200).json({
-    ...deletedUser,
-  });
+  const deletedContact = await Contact.findByIdAndDelete(req.params.id);
+
+  res.status(200).json(deletedContact);
 });
 
 export const createContact = catchAsync(async (req, res, next) => {
-  const { value, errors } = createContactValidator(req.body);
-  const { name, email, phone } = value;
+  const contact = await Contact.create(req.body);
 
-  if (errors) {
-    throw HttpError(400, "Invalid user data", errors);
-  }
-
-  const newUser = await addContact(name, email, phone);
-  res.status(201).json({
-    ...newUser,
-  });
+  res.status(201).json(contact);
 });
 
 export const updateContact = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-  const { value, errors } = updateContactValidator(req.body);
+  const { contact, body } = req;
 
-  if (errors) {
-    throw HttpError(400, "Invalid user data", errors);
-  }
-
-  if (Object.keys(value).length === 0) {
-    throw HttpError(400, "Body must have at least one field");
-  }
-
-  const updatedUser = await changeContact(id, value);
-  res.status(200).json({
-    ...updatedUser,
+  const updatedContact = await Contact.findByIdAndUpdate(contact.id, body, {
+    new: true,
   });
+
+  res.status(200).json(updatedContact);
 });
