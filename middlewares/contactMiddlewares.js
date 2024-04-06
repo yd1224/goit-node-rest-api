@@ -1,11 +1,14 @@
 import HttpError from "../helpers/HttpError.js";
 import { catchAsync } from "../helpers/catchAsync.js";
-import { Contact } from "../models/contactModel.js";
 import {
   createContactValidator,
   updateContactValidator,
 } from "../helpers/contactValidator.js";
 import { Types } from "mongoose";
+import {
+  checkContactExistService,
+  checkFindByIdService,
+} from "../services/contactServices.js";
 
 export const checkCreateContactData = catchAsync(async (req, res, next) => {
   const { value, errors } = createContactValidator(req.body);
@@ -14,7 +17,7 @@ export const checkCreateContactData = catchAsync(async (req, res, next) => {
     throw HttpError(400, "Invalid user data", errors);
   }
 
-  const contactExists = await Contact.exists({ phone: value.phone });
+  const contactExists = await checkContactExistService({ phone: value.phone });
 
   if (contactExists) {
     throw HttpError(409, "Contact with that number already exists...", errors);
@@ -46,7 +49,7 @@ export const checkContactExist = catchAsync(async (req, res, next) => {
     throw HttpError(404, "Not found");
   }
 
-  const contact = await Contact.findById(id);
+  const contact = await checkFindByIdService(id);
 
   if (!contact) {
     throw HttpError(404, "Not found");
