@@ -2,6 +2,7 @@ import HttpError from "../helpers/HttpError.js";
 import { catchAsync } from "../helpers/catchAsync.js";
 import {
   createContactValidator,
+  updateContactFavoriteStateValidator,
   updateContactValidator,
 } from "../helpers/contactValidator.js";
 import { Types } from "mongoose";
@@ -14,7 +15,7 @@ export const checkCreateContactData = catchAsync(async (req, res, next) => {
   const { value, errors } = createContactValidator(req.body);
 
   if (errors) {
-    throw HttpError(400, "Invalid user data", errors);
+    throw HttpError(400, "Invalid contact data", errors);
   }
 
   const contactExists = await checkContactExistService({ phone: value.phone });
@@ -26,11 +27,11 @@ export const checkCreateContactData = catchAsync(async (req, res, next) => {
   next();
 });
 
-export const checkUpdateUserData = (req, res, next) => {
+export const checkUpdateContactData = (req, res, next) => {
   const { value, errors } = updateContactValidator(req.body);
 
   if (errors) {
-    throw HttpError(400, "Invalid user data", errors);
+    throw HttpError(400, "Invalid contact data", errors);
   }
 
   if (Object.keys(value).length === 0) {
@@ -59,3 +60,17 @@ export const checkContactExist = catchAsync(async (req, res, next) => {
 
   next();
 });
+
+export const checkUpdateContactFavoriteState = (req, res, next) => {
+  const { value, errors } = updateContactFavoriteStateValidator(req.body);
+
+  if (errors) {
+    throw HttpError(400, "Invalid contact data", errors);
+  }
+
+  if (Object.keys(value).length === 0 || Object.keys(value).length > 1) {
+    throw HttpError(400, "Body must have one field");
+  }
+
+  next();
+};

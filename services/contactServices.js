@@ -37,3 +37,11 @@ export const checkFindByIdService = async (id) => {
 
   return contact;
 };
+
+export const updateStatusContact = async (contactId, body) => {
+  const updatedContact = await Contact.findByIdAndUpdate(contactId, body, {
+    new: true,
+  });
+
+  return updatedContact;
+};

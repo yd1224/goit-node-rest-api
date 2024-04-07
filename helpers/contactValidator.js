@@ -24,6 +24,14 @@ export const updateContactValidator = joiValidator((data) =>
       phone: Joi.string().regex(
         /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
       ),
+    })
+    .validate(data)
+);
+
+export const updateContactFavoriteStateValidator = joiValidator((data) =>
+  Joi.object()
+    .options({ abortEarly: false })
+    .keys({
       favorite: Joi.bool(),
     })
     .validate(data)

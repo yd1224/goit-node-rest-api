@@ -4,12 +4,14 @@ import {
   deleteContact,
   createContact,
   updateContact,
+  updateContactFavotiteState,
 } from "../controllers/contactsControllers.js";
 import { Router } from "express";
 import {
   checkContactExist,
   checkCreateContactData,
-  checkUpdateUserData,
+  checkUpdateContactData,
+  checkUpdateContactFavoriteState,
 } from "../middlewares/contactMiddlewares.js";
 
 const contactsRouter = Router();
@@ -25,8 +27,15 @@ contactsRouter.post("/", checkCreateContactData, createContact);
 contactsRouter.put(
   "/:id",
   checkContactExist,
-  checkUpdateUserData,
+  checkUpdateContactData,
   updateContact
+);
+
+contactsRouter.patch(
+  "/:id/favorite",
+  checkContactExist,
+  checkUpdateContactFavoriteState,
+  updateContactFavotiteState
 );
 
 export default contactsRouter;

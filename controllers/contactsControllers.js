@@ -4,6 +4,7 @@ import {
   deleteContactService,
   getContactsService,
   updateContactService,
+  updateStatusContact,
 } from "../services/contactServices.js";
 
 export const getAllContacts = catchAsync(async (req, res) => {
@@ -36,4 +37,15 @@ export const updateContact = catchAsync(async (req, res, next) => {
   const updatedContact = await updateContactService(contact, body);
 
   res.status(200).json(updatedContact);
+});
+
+export const updateContactFavotiteState = catchAsync(async (req, res, next) => {
+  const { contact, body } = req;
+
+  const updatedContactWithNewFavotiteField = await updateStatusContact(
+    contact.id,
+    body
+  );
+
+  res.status(200).json(updatedContactWithNewFavotiteField);
 });
