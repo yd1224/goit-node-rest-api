@@ -4,8 +4,19 @@ import cors from "cors";
 import contactsRouter from "./routes/contactsRouter.js";
 import dotenv from "dotenv";
 import { errorHandler } from "./controllers/errorController.js";
+import mongoose from "mongoose";
 
 dotenv.config();
+
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => {
+    console.log("Database connection successful");
+  })
+  .catch((err) => {
+    console.log(err);
+    process.exit(1);
+  });
 
 const app = express();
 
