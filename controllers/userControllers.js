@@ -23,3 +23,12 @@ export const loginUser = catchAsync(async (req, res) => {
     token,
   });
 });
+
+export const currentUser = (req, res) => {
+  const currentUser = req.user;
+
+  res.status(200).json({
+    email: currentUser.email,
+    subscription: currentUser.subscription,
+  });
+};

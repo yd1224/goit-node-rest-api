@@ -8,7 +8,7 @@ import {
 } from "../services/contactServices.js";
 
 export const getAllContacts = catchAsync(async (req, res) => {
-  const list = await getContactsService();
+  const list = await getContactsService(req.userId);
 
   res.status(200).json(list);
 });
@@ -26,9 +26,11 @@ export const deleteContact = catchAsync(async (req, res, next) => {
 });
 
 export const createContact = catchAsync(async (req, res, next) => {
-  const contact = await createContactService(req.body);
+  const owner = req.userId;
 
-  res.status(201).json(contact);
+  const contact = await createContactService(req.body, owner);
+
+  res.status(201).json({ contact });
 });
 
 export const updateContact = catchAsync(async (req, res, next) => {

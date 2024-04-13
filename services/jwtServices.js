@@ -12,7 +12,7 @@ export const checkToken = (token) => {
     throw HttpError(401, "Unauthorized");
   }
   try {
-    const { id } = json.verify(token, process.env.JWT_SECRET);
+    const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
     return id;
   } catch (err) {

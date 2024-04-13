@@ -17,13 +17,17 @@ export const createUserService = async (userData) => {
 export const loginUserService = async ({ email, password }) => {
   const user = await User.findOne({ email });
 
-  if (!user) throw HttpError(401, "Unauthorized");
+  if (!user) throw HttpError(401, "Email or password is wrong");
 
   const passwordIsValid = await user.checkUserPassword(password, user.password);
 
-  if (!passwordIsValid) throw HttpError(401, "Unauthorized");
+  if (!passwordIsValid) throw HttpError(401, "Email or password is wrong");
 
   const token = signToken(user.id);
 
   return { user, token };
+};
+
+export const getUserByIdService = (id) => {
+  return User.findById(id);
 };
