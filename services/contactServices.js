@@ -8,13 +8,39 @@ export const createContactService = async (contactData, owner) => {
 };
 
 export const getContactsService = async (query, user) => {
+  if (
+    !query.favorite &&
+    !query.limit &&
+    !query.page &&
+    Object.keys(query).length !== 0
+  ) {
+    throw HttpError(404, "Not found");
+  }
+
   const findOptions = query.favorite ? { favorite: query.favorite } : {};
+
+  if (
+    findOptions.favorite !== "true" &&
+    findOptions.favorite !== "false" &&
+    Object.keys(findOptions).length !== 0
+  ) {
+    throw HttpError(404, "Not found");
+  }
 
   findOptions.owner = user;
 
-  const list = await Contact.find(findOptions);
+  const listQuery = Contact.find(findOptions);
 
-  return { list, total: list.length };
+  const page = query.page ? +query.page : 1;
+  const limit = query.limit ? +query.limit : 10;
+  const contactsToSkip = (page - 1) * limit;
+
+  listQuery.skip(contactsToSkip).limit(limit);
+
+  const list = await listQuery;
+  const total = await Contact.countDocuments(findOptions);
+
+  return { list, total };
 };
 
 export const updateContactService = async (contact, body) => {
