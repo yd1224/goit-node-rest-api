@@ -50,7 +50,7 @@ export const checkContactExist = catchAsync(async (req, res, next) => {
     throw HttpError(404, "Not found");
   }
 
-  const contact = await checkFindByIdService(id, req.userId);
+  const contact = await checkFindByIdService(id);
 
   if (!contact) {
     throw HttpError(404, "Not found");

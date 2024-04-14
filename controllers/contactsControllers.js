@@ -3,20 +3,24 @@ import {
   createContactService,
   deleteContactService,
   getContactsService,
+  getOneContactService,
   updateContactService,
   updateStatusContact,
 } from "../services/contactServices.js";
+import { currentUser } from "./userControllers.js";
 
 export const getAllContacts = catchAsync(async (req, res) => {
-  const list = await getContactsService(req.userId);
+  const { list, total } = await getContactsService(req.query, req.user);
 
-  res.status(200).json(list);
+  res.status(200).json({ list, total });
 });
 
 export const getOneContact = catchAsync(async (req, res, next) => {
   const { contact } = req;
+  const { user } = req;
+  const gotContact = getOneContactService(contact, user);
 
-  res.status(200).json(contact);
+  res.status(200).json(gotContact);
 });
 
 export const deleteContact = catchAsync(async (req, res, next) => {
@@ -26,7 +30,7 @@ export const deleteContact = catchAsync(async (req, res, next) => {
 });
 
 export const createContact = catchAsync(async (req, res, next) => {
-  const owner = req.userId;
+  const owner = req.user;
 
   const contact = await createContactService(req.body, owner);
 

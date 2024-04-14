@@ -1,20 +1,20 @@
+import HttpError from "../helpers/HttpError.js";
 import { Contact } from "../models/contactModel.js";
 
 export const createContactService = async (contactData, owner) => {
-  console.log(contactData);
-  const contact = await Contact.create({ ...contactData, owner });
+  const contact = await Contact.create({ ...contactData, owner: owner.id });
 
   return contact;
 };
 
-export const getContactsService = async (userId) => {
-  try {
-    const list = await Contact.find({ owner: userId }).select("-owner");
-    return list;
-  } catch (error) {
-    console.error("Error fetching contacts:", error);
-    throw error;
-  }
+export const getContactsService = async (query, user) => {
+  const findOptions = query.favorite ? { favorite: query.favorite } : {};
+
+  findOptions.owner = user;
+
+  const list = await Contact.find(findOptions);
+
+  return { list, total: list.length };
 };
 
 export const updateContactService = async (contact, body) => {
@@ -37,14 +37,10 @@ export const checkContactExistService = async (filter) => {
   return contactExists;
 };
 
-export const checkFindByIdService = async (id, ownerId) => {
-  try {
-    const contact = await Contact.findOne({ _id: id, owner: ownerId });
-    return contact;
-  } catch (error) {
-    console.error("Error fetching contact:", error);
-    throw error;
-  }
+export const checkFindByIdService = async (id) => {
+  const contact = await Contact.findById(id);
+
+  return contact;
 };
 
 export const updateStatusContact = async (contactId, body) => {
@@ -53,4 +49,10 @@ export const updateStatusContact = async (contactId, body) => {
   });
 
   return updatedContact;
+};
+
+export const getOneContactService = (contact, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
+
+  return contact;
 };

@@ -2,6 +2,7 @@ import { catchAsync } from "../helpers/catchAsync.js";
 import {
   createUserService,
   loginUserService,
+  logoutUserService,
 } from "../services/userServices.js";
 
 export const createUser = catchAsync(async (req, res) => {
@@ -32,3 +33,10 @@ export const currentUser = (req, res) => {
     subscription: currentUser.subscription,
   });
 };
+
+export const logoutUser = catchAsync(async (req, res) => {
+  const id = req.userId;
+
+  await logoutUserService(id);
+  res.sendStatus(204);
+});

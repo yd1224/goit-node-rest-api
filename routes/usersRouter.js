@@ -8,6 +8,7 @@ import {
   createUser,
   currentUser,
   loginUser,
+  logoutUser,
 } from "../controllers/userControllers.js";
 
 const usersRouter = Router();
@@ -17,5 +18,7 @@ usersRouter.post("/register", checkCreateUserData, createUser);
 usersRouter.post("/login", checkLogInData, loginUser);
 
 usersRouter.get("/current", protect, currentUser);
+
+usersRouter.post("/logout", protect, logoutUser);
 
 export default usersRouter;

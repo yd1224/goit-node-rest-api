@@ -25,9 +25,24 @@ export const loginUserService = async ({ email, password }) => {
 
   const token = signToken(user.id);
 
+  user.token = token;
+  await user.save();
+
   return { user, token };
 };
 
 export const getUserByIdService = (id) => {
   return User.findById(id);
+};
+
+export const logoutUserService = async (userId) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw Error("Not authorized");
+  }
+
+  user.token = null;
+
+  await user.save();
 };
