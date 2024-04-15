@@ -24,7 +24,13 @@ export const getOneContact = catchAsync(async (req, res, next) => {
 });
 
 export const deleteContact = catchAsync(async (req, res, next) => {
-  const deletedContact = await deleteContactService(req.params.id);
+  const { contact } = req;
+  const { user } = req;
+  const deletedContact = await deleteContactService(
+    req.params.id,
+    contact,
+    user
+  );
 
   res.status(200).json(deletedContact);
 });
@@ -38,19 +44,20 @@ export const createContact = catchAsync(async (req, res, next) => {
 });
 
 export const updateContact = catchAsync(async (req, res, next) => {
-  const { contact, body } = req;
+  const { contact, body, user } = req;
 
-  const updatedContact = await updateContactService(contact, body);
+  const updatedContact = await updateContactService(contact, body, user);
 
   res.status(200).json(updatedContact);
 });
 
 export const updateContactFavotiteState = catchAsync(async (req, res, next) => {
-  const { contact, body } = req;
+  const { contact, body, user } = req;
 
   const updatedContactWithNewFavotiteField = await updateStatusContact(
-    contact.id,
-    body
+    contact,
+    body,
+    user
   );
 
   res.status(200).json(updatedContactWithNewFavotiteField);

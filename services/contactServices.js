@@ -43,7 +43,9 @@ export const getContactsService = async (query, user) => {
   return { list, total };
 };
 
-export const updateContactService = async (contact, body) => {
+export const updateContactService = async (contact, body, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
+
   const updatedContact = await Contact.findByIdAndUpdate(contact.id, body, {
     new: true,
   });
@@ -51,7 +53,8 @@ export const updateContactService = async (contact, body) => {
   return updatedContact;
 };
 
-export const deleteContactService = async (id) => {
+export const deleteContactService = async (id, contact, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
   const deletedContact = await Contact.findByIdAndDelete(id);
 
   return deletedContact;
@@ -69,8 +72,10 @@ export const checkFindByIdService = async (id) => {
   return contact;
 };
 
-export const updateStatusContact = async (contactId, body) => {
-  const updatedContact = await Contact.findByIdAndUpdate(contactId, body, {
+export const updateStatusContact = async (contact, body, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
+
+  const updatedContact = await Contact.findByIdAndUpdate(contact.id, body, {
     new: true,
   });
 
