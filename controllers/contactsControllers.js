@@ -40,7 +40,7 @@ export const createContact = catchAsync(async (req, res, next) => {
 
   const contact = await createContactService(req.body, owner);
 
-  res.status(201).json({ contact });
+  res.status(201).json(contact);
 });
 
 export const updateContact = catchAsync(async (req, res, next) => {
