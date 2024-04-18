@@ -18,12 +18,6 @@ export const checkCreateContactData = catchAsync(async (req, res, next) => {
     throw HttpError(400, "Invalid contact data", errors);
   }
 
-  const contactExists = await checkContactExistService({ phone: value.phone });
-
-  if (contactExists) {
-    throw HttpError(409, "Contact with that number already exists...", errors);
-  }
-
   next();
 });
 
@@ -74,3 +68,9 @@ export const checkUpdateContactFavoriteState = (req, res, next) => {
 
   next();
 };
+
+// const contactExists = await checkContactExistService({ phone: value.phone });
+
+// if (contactExists) {
+//   throw HttpError(409, "Contact with that number already exists...", errors);
+// }

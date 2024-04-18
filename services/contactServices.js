@@ -1,18 +1,51 @@
+import HttpError from "../helpers/HttpError.js";
 import { Contact } from "../models/contactModel.js";
 
-export const createContactService = async (contactData) => {
-  const contact = await Contact.create(contactData);
+export const createContactService = async (contactData, owner) => {
+  const contact = await Contact.create({ ...contactData, owner: owner.id });
 
   return contact;
 };
 
-export const getContactsService = async () => {
-  const list = await Contact.find();
+export const getContactsService = async (query, user) => {
+  if (
+    !query.favorite &&
+    !query.limit &&
+    !query.page &&
+    Object.keys(query).length !== 0
+  ) {
+    throw HttpError(404, "Not found");
+  }
 
-  return list;
+  const findOptions = query.favorite ? { favorite: query.favorite } : {};
+
+  if (
+    findOptions.favorite !== "true" &&
+    findOptions.favorite !== "false" &&
+    Object.keys(findOptions).length !== 0
+  ) {
+    throw HttpError(404, "Not found");
+  }
+
+  findOptions.owner = user;
+
+  const listQuery = Contact.find(findOptions);
+
+  const page = query.page ? +query.page : 1;
+  const limit = query.limit ? +query.limit : 10;
+  const contactsToSkip = (page - 1) * limit;
+
+  listQuery.skip(contactsToSkip).limit(limit);
+
+  const list = await listQuery;
+  const total = await Contact.countDocuments(findOptions);
+
+  return { list, total };
 };
 
-export const updateContactService = async (contact, body) => {
+export const updateContactService = async (contact, body, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
+
   const updatedContact = await Contact.findByIdAndUpdate(contact.id, body, {
     new: true,
   });
@@ -20,7 +53,8 @@ export const updateContactService = async (contact, body) => {
   return updatedContact;
 };
 
-export const deleteContactService = async (id) => {
+export const deleteContactService = async (id, contact, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
   const deletedContact = await Contact.findByIdAndDelete(id);
 
   return deletedContact;
@@ -38,10 +72,18 @@ export const checkFindByIdService = async (id) => {
   return contact;
 };
 
-export const updateStatusContact = async (contactId, body) => {
-  const updatedContact = await Contact.findByIdAndUpdate(contactId, body, {
+export const updateStatusContact = async (contact, body, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
+
+  const updatedContact = await Contact.findByIdAndUpdate(contact.id, body, {
     new: true,
   });
 
   return updatedContact;
+};
+
+export const getOneContactService = (contact, user) => {
+  if (contact.owner.toString() !== user.id) throw HttpError(404, "Not found");
+
+  return contact;
 };

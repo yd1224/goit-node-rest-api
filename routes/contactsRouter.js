@@ -13,8 +13,11 @@ import {
   checkUpdateContactData,
   checkUpdateContactFavoriteState,
 } from "../middlewares/contactMiddlewares.js";
+import { protect } from "../middlewares/userMiddlewares.js";
 
 const contactsRouter = Router();
+
+contactsRouter.use(protect);
 
 contactsRouter.get("/", getAllContacts);
 
