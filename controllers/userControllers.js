@@ -3,6 +3,7 @@ import {
   createUserService,
   loginUserService,
   logoutUserService,
+  updateUserService,
 } from "../services/userServices.js";
 
 export const createUser = catchAsync(async (req, res) => {
@@ -39,4 +40,12 @@ export const logoutUser = catchAsync(async (req, res) => {
 
   await logoutUserService(id);
   res.sendStatus(204);
+});
+
+export const updateUser = catchAsync(async (req, res) => {
+  // add validator
+  const updatedUser = await updateUserService(req.body, req.user, req.file);
+  res.status(200).json({
+    avatarUrl: updatedUser.avatarUrl,
+  });
 });

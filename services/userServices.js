@@ -46,3 +46,15 @@ export const logoutUserService = async (userId) => {
 
   await user.save();
 };
+
+export const updateUserService = async (userData, user, file) => {
+  if (file) {
+    user.avatarUrl = file;
+  }
+
+  Object.keys(userData).forEach((key) => {
+    user[key] = userData[key];
+  });
+
+  return user.save();
+};
