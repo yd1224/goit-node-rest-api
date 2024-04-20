@@ -1,5 +1,6 @@
 import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
+import { ImageService } from "./imageService.js";
 import { signToken } from "./jwtServices.js";
 
 export const checkUserExistsService = (filter) => {
@@ -49,7 +50,15 @@ export const logoutUserService = async (userId) => {
 
 export const updateUserService = async (userData, user, file) => {
   if (file) {
-    user.avatarUrl = file;
+    // user.avatarUrl = file.path.replace("public", "");
+
+    user.avatarURL = await ImageService.saveImage(file, {
+      maxFileSize: 2,
+      width: 250,
+      height: 250
+    }, "avatars",
+      "users",
+      user.id)
   }
 
   Object.keys(userData).forEach((key) => {

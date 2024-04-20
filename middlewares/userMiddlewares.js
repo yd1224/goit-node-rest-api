@@ -1,5 +1,3 @@
-import multer from "multer";
-import path from "path";
 import HttpError from "../helpers/HttpError.js";
 import { catchAsync } from "../helpers/catchAsync.js";
 import {
@@ -11,7 +9,7 @@ import {
   checkUserExistsService,
   getUserByIdService,
 } from "../services/userServices.js";
-import { v4 } from "uuid";
+import { ImageService } from "../services/imageService.js";
 
 export const checkCreateUserData = catchAsync(async (req, res, next) => {
   const { value, errors } = createUserDataValidator(req.body);
@@ -56,29 +54,31 @@ export const protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cbk) => {
-    cbk(null, path.join("tmp"));
-  },
-  filename: (req, file, cbk) => {
-    const extension = file.mimetype.split("/")[1];
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cbk) => {
+//     cbk(null, path.join("tmp"));
+//   },
+//   filename: (req, file, cbk) => {
+//     const extension = file.mimetype.split("/")[1];
 
-    cbk(null, `${req.user.id}-${v4()}.${extension}`);
-  },
-});
+//     cbk(null, `${req.user.id}-${v4()}.${extension}`);
+//   },
+// });
 
-const multerFilter = (req, file, cbk) => {
-  if (file.mimetype.startsWith("image/")) {
-    cbk(null, true);
-  } else {
-    cbk(HttpError(400, "Upload images"), false);
-  }
-};
+// const multerFilter = (req, file, cbk) => {
+//   if (file.mimetype.startsWith("image/")) {
+//     cbk(null, true);
+//   } else {
+//     cbk(HttpError(400, "Upload images"), false);
+//   }
+// };
 
-export const uploadAvatar = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-  limits: {
-    fieldSize: 2 * 1024 * 1024,
-  },
-}).single("avatar");
+// export const uploadAvatar = multer({
+//   storage: multerStorage,
+//   fileFilter: multerFilter,
+//   limits: {
+//     fieldSize: 2 * 1024 * 1024,
+//   },
+// }).single("avatar");
+
+export const uploadAvatar = ImageService.initUploadImageMiddleware("avatar");

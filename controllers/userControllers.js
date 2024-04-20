@@ -46,6 +46,6 @@ export const updateUser = catchAsync(async (req, res) => {
   // add validator
   const updatedUser = await updateUserService(req.body, req.user, req.file);
   res.status(200).json({
-    avatarUrl: updatedUser.avatarUrl,
+    avatarUrl: updatedUser.avatarURL,
   });
 });
