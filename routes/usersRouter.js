@@ -8,8 +8,10 @@ import {
 import {
   createUser,
   currentUser,
+  forgotPassword,
   loginUser,
   logoutUser,
+  resetPassword,
   updateUser,
 } from "../controllers/userControllers.js";
 
@@ -24,5 +26,9 @@ usersRouter.get("/current", protect, currentUser);
 usersRouter.post("/logout", protect, logoutUser);
 
 usersRouter.patch("/avatars", protect, uploadAvatar, updateUser);
+
+usersRouter.post("/forgot-password", forgotPassword);
+
+usersRouter.post("/restore-password/:otp", resetPassword);
 
 export default usersRouter;

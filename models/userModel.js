@@ -24,6 +24,12 @@ const userSchema = new Schema({
   avatarURL: {
     type: String
   },
+  passwordResetToken: {
+    type: String
+  },
+  passwordResetTokenExp: {
+    type: Date
+  }
 });
 
 userSchema.pre("save", async function (next) {
@@ -44,5 +50,14 @@ userSchema.pre("save", async function (next) {
 // const isPasswordValid = await bcrypt.compare('Pass_1234', passwordHash);
 userSchema.methods.checkUserPassword = (candidate, passwordHash) =>
   bcrypt.compare(candidate, passwordHash);
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.passwordResetTokenExp = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+}
 
 export const User = model("User", userSchema);

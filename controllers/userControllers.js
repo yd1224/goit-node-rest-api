@@ -1,8 +1,12 @@
+import HttpError from "../helpers/HttpError.js";
 import { catchAsync } from "../helpers/catchAsync.js";
+import { User } from "../models/userModel.js";
 import {
   createUserService,
+  getUserByEmailService,
   loginUserService,
   logoutUserService,
+  resetPasswordService,
   updateUserService,
 } from "../services/userServices.js";
 
@@ -49,3 +53,25 @@ export const updateUser = catchAsync(async (req, res) => {
     avatarUrl: updatedUser.avatarURL,
   });
 });
+
+export const forgotPassword = catchAsync(async (req, res) => {
+  const user = await getUserByEmailService(req.body.email);
+
+  if (!user) return res.status(200)
+
+  const otp = user.createPasswordResetToken();
+  console.log(otp);
+  await user.save();
+
+  res.status(200).json({
+    msg: "Instructions sent via email"
+  })
+})
+
+export const resetPassword = catchAsync(async (req, res) => {
+  //password validator
+
+  await resetPasswordService(req.params.otp, req.body.password);
+
+  res.sendStatus(200);
+})

@@ -2,6 +2,7 @@ import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
 import { ImageService } from "./imageService.js";
 import { signToken } from "./jwtServices.js";
+import crypto from "crypto";
 
 export const checkUserExistsService = (filter) => {
   return User.exists(filter);
@@ -36,6 +37,10 @@ export const getUserByIdService = (id) => {
   return User.findById(id);
 };
 
+export const getUserByEmailService = (email) => {
+  return User.findOne({ email });
+};
+
 export const logoutUserService = async (userId) => {
   const user = await User.findById(userId);
 
@@ -67,3 +72,20 @@ export const updateUserService = async (userData, user, file) => {
 
   return user.save();
 };
+
+export const resetPasswordService = async (otp, newPassword) => {
+  const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: otpHash,
+    passwordResetTokenExp: { $gt: Date.now() }
+  })
+
+  if (!user) throw HttpError(400, "Token is invalid...");
+
+  user.password = newPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExp = undefined;
+
+  await user.save();
+}
