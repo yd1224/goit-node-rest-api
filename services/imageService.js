@@ -4,6 +4,7 @@ import Jimp from "jimp";
 import HttpError from "../helpers/HttpError.js";
 import { v4 } from "uuid";
 import * as fse from "fs-extra"
+import { moveAndDeleteFile } from "../helpers/moveAndDeleteFile.js";
 
 export class ImageService {
     static initUploadImageMiddleware(fieldName) {
@@ -26,17 +27,22 @@ export class ImageService {
             throw HttpError(400, "File is too large");
         }
         const fileName = `${v4()}.jpeg`;
-        const fullFilePath = path.join(process.cwd(), "public", ...pathSegments)
+        const tmpFilePath = path.join(process.cwd(), "tmp")
+        const avatarsFolderPath = path.join(process.cwd(), ...pathSegments);
 
-        await fse.ensureDir(fullFilePath)
+        await fse.ensureDir(avatarsFolderPath);
 
         const avatar = await Jimp.read(file.buffer);
+
         await avatar
             .cover(options?.width ?? 300, options?.height ?? 300)
             .quality(90)
-            .writeAsync(path.join(fullFilePath, fileName));
+            .writeAsync(path.join(tmpFilePath, fileName));
 
-        return path.join(...pathSegments, fileName)
+        moveAndDeleteFile(tmpFilePath, fileName, avatarsFolderPath)
+
+        return path.join("avatars", fileName);
     }
+
 
 }

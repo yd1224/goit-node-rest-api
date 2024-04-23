@@ -61,9 +61,9 @@ export const updateUserService = async (userData, user, file) => {
       maxFileSize: 2,
       width: 250,
       height: 250
-    }, "avatars",
-      "users",
-      user.id)
+    }, "public",
+      "avatars"
+    )
   }
 
   Object.keys(userData).forEach((key) => {
