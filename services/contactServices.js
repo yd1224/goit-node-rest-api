@@ -1,8 +1,9 @@
 import HttpError from "../helpers/HttpError.js";
+import { contactNameHandler } from "../helpers/contactNamesHandler.js";
 import { Contact } from "../models/contactModel.js";
 
-export const createContactService = async (contactData, owner) => {
-  const contact = await Contact.create({ ...contactData, owner: owner.id });
+export const createContactService = async ({ name, ...restcontactData }, owner) => {
+  const contact = await Contact.create({ ...restcontactData, name: contactNameHandler(name), owner: owner.id });
 
   return contact;
 };
