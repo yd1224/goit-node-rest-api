@@ -9,6 +9,7 @@ import {
   resetPasswordService,
   updateUserService,
 } from "../services/userServices.js";
+import nodemailer from "nodemailer"
 
 export const createUser = catchAsync(async (req, res) => {
   const { newUser } = await createUserService(req.body);
@@ -60,7 +61,13 @@ export const forgotPassword = catchAsync(async (req, res) => {
   if (!user) return res.status(200)
 
   const otp = user.createPasswordResetToken();
-  console.log(otp);
+
+  try {
+    const emailTransport = nodemailer
+  } catch (err) {
+
+  }
+
   await user.save();
 
   res.status(200).json({
