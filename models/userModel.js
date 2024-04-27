@@ -24,12 +24,20 @@ const userSchema = new Schema({
   avatarURL: {
     type: String
   },
-  passwordResetToken: {
-    type: String
+  // passwordResetToken: {
+  //   type: String
+  // },
+  // passwordResetTokenExp: {
+  //   type: Date
+  // },
+  verify: {
+    type: Boolean,
+    default: false,
   },
-  passwordResetTokenExp: {
-    type: Date
-  }
+  verificationToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
+  },
 });
 
 userSchema.pre("save", async function (next) {
@@ -51,13 +59,13 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.checkUserPassword = (candidate, passwordHash) =>
   bcrypt.compare(candidate, passwordHash);
 
-userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString("hex");
+// userSchema.methods.createVerificationToken = function () {
+//   const verifyToken = crypto.randomBytes(32).toString("hex");
 
-  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-  this.passwordResetTokenExp = Date.now() + 10 * 60 * 1000;
+//   this.verificationToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+//   // this.passwordResetTokenExp = Date.now() + 10 * 60 * 1000;
 
-  return resetToken;
-}
+//   return resetToken;
+// }
 
 export const User = model("User", userSchema);

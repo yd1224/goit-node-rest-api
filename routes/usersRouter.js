@@ -8,7 +8,7 @@ import {
 import {
   createUser,
   currentUser,
-  forgotPassword,
+  // forgotPassword,
   loginUser,
   logoutUser,
   resetPassword,
@@ -27,8 +27,10 @@ usersRouter.post("/logout", protect, logoutUser);
 
 usersRouter.patch("/avatars", protect, uploadAvatar, updateUser);
 
-usersRouter.post("/forgot-password", forgotPassword);
+// usersRouter.post("/forgot-password", forgotPassword);
 
-usersRouter.post("/restore-password/:otp", resetPassword);
+// usersRouter.post("/restore-password/:otp", resetPassword);
+
+// usersRouter.get("/verify/:verificationToken", verifyEmail);
 
 export default usersRouter;

@@ -8,8 +8,10 @@ export const checkUserExistsService = (filter) => {
   return User.exists(filter);
 };
 
-export const createUserService = async (userData) => {
-  const newUser = await User.create(userData);
+export const createUserService = async (userData, verificationToken) => {
+  const data = { ...userData, verificationToken }
+  console.log(data);
+  const newUser = await User.create(data);
 
   // const token = signToken(newUser.id);
 
