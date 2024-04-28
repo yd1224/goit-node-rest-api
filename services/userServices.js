@@ -10,18 +10,15 @@ export const checkUserExistsService = (filter) => {
 
 export const createUserService = async (userData, verificationToken) => {
   const data = { ...userData, verificationToken }
-  console.log(data);
   const newUser = await User.create(data);
-
-  // const token = signToken(newUser.id);
 
   return { newUser };
 };
 
 export const loginUserService = async ({ email, password }) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email, verify: true });
 
-  if (!user) throw HttpError(401, "Email or password is wrong");
+  if (!user) throw HttpError(401, "Not authorized");
 
   const passwordIsValid = await user.checkUserPassword(password, user.password);
 
@@ -40,6 +37,7 @@ export const getUserByIdService = (id) => {
 };
 
 export const getUserByEmailService = (email) => {
+  console.log(email);
   return User.findOne({ email });
 };
 
@@ -75,19 +73,17 @@ export const updateUserService = async (userData, user, file) => {
   return user.save();
 };
 
-export const resetPasswordService = async (otp, newPassword) => {
-  const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
-
+export const verifyEmailService = async (token) => {
   const user = await User.findOne({
-    passwordResetToken: otpHash,
-    passwordResetTokenExp: { $gt: Date.now() }
+    verificationToken: token,
   })
 
   if (!user) throw HttpError(400, "Token is invalid...");
 
-  user.password = newPassword;
-  user.passwordResetToken = undefined;
-  user.passwordResetTokenExp = undefined;
+  user.verificationToken = null;
+  user.verify = true;
 
   await user.save();
 }
+
+

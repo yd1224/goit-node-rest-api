@@ -2,17 +2,18 @@ import { Router } from "express";
 import {
   checkCreateUserData,
   checkLogInData,
+  checkVerifyUserData,
   protect,
   uploadAvatar,
 } from "../middlewares/userMiddlewares.js";
 import {
   createUser,
   currentUser,
-  // forgotPassword,
   loginUser,
   logoutUser,
-  resetPassword,
   updateUser,
+  verifyEmail,
+  verifyUser,
 } from "../controllers/userControllers.js";
 
 const usersRouter = Router();
@@ -27,10 +28,8 @@ usersRouter.post("/logout", protect, logoutUser);
 
 usersRouter.patch("/avatars", protect, uploadAvatar, updateUser);
 
-// usersRouter.post("/forgot-password", forgotPassword);
+usersRouter.get("/verify/:verificationToken", verifyEmail);
 
-// usersRouter.post("/restore-password/:otp", resetPassword);
-
-// usersRouter.get("/verify/:verificationToken", verifyEmail);
+usersRouter.post("/verify", checkVerifyUserData, verifyUser);
 
 export default usersRouter;

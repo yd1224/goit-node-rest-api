@@ -3,6 +3,7 @@ import { catchAsync } from "../helpers/catchAsync.js";
 import {
   createUserDataValidator,
   logInUserDataValidator,
+  verifyUserValidator,
 } from "../helpers/userValidator.js";
 import { checkToken } from "../services/jwtServices.js";
 import {
@@ -82,3 +83,13 @@ export const protect = catchAsync(async (req, res, next) => {
 // }).single("avatar");
 
 export const uploadAvatar = ImageService.initUploadImageMiddleware("avatar");
+
+export const checkVerifyUserData = catchAsync(async (req, res, next) => {
+  const { value, errors } = verifyUserValidator(req.body);
+
+  if (errors) throw HttpError(400, "missing required field email");
+
+  req.body = value;
+
+  next();
+});

@@ -7,24 +7,14 @@ import {
   getUserByEmailService,
   loginUserService,
   logoutUserService,
-  resetPasswordService,
   updateUserService,
+  verifyEmailService,
 } from "../services/userServices.js";
-import nodemailer from "nodemailer"
 import { Email } from "../services/emailService.js";
+import { sendEmail } from "../helpers/sendEmail.js";
 
 export const createUser = catchAsync(async (req, res) => {
-  let verificationToken = nanoid();
-
-  try {
-    const verifyUrl = `${req.protocol}://${req.get('host')}/api/v1/veryfy/${verificationToken}`;
-
-    await new Email(req.body, verifyUrl).sendVerify();
-  } catch (err) {
-    console.log(err);
-    console.log("<<<<<<<<<<<<<<<<<<<,");
-    verificationToken = null;
-  }
+  const verificationToken = await sendEmail(req);
 
   const { newUser } = await createUserService(req.body, verificationToken);
 
@@ -32,10 +22,6 @@ export const createUser = catchAsync(async (req, res) => {
     msg: "Instructions sent via email"
   })
 
-
-  // res.status(201).json({
-  //   user: { email: newUser.email, subscription: newUser.subscription },
-  // });
 });
 
 export const loginUser = catchAsync(async (req, res) => {
@@ -110,10 +96,28 @@ export const updateUser = catchAsync(async (req, res) => {
 // })
 // })
 
-export const resetPassword = catchAsync(async (req, res) => {
-  //password validator
-
-  await resetPasswordService(req.params.otp, req.body.password);
+export const verifyEmail = catchAsync(async (req, res) => {
+  await verifyEmailService(req.params.verificationToken.replace(/:/g, ''));
 
   res.sendStatus(200);
+})
+
+export const verifyUser = catchAsync(async (req, res) => {
+  const user = await getUserByEmailService(req.body.email);
+
+  if (!user) throw HttpError(400, "Not authorized");
+
+  if (user.verify === false) {
+    sendEmail(req);
+
+    res.status(200).json({
+      msg: "Instructions sent via email"
+    })
+  }
+  else {
+    res.status(400).json({
+      message: "Verification has already been passed"
+    })
+  }
+
 })

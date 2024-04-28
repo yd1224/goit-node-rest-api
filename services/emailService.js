@@ -5,38 +5,39 @@ import path from "path"
 
 export class Email {
     constructor(userData, url) {
-        console.log("userData", userData);
         this.to = userData.email;
         this.url = url;
-        this.from = "yelyzaveta_demchenko@meta.ua";
+        this.from = process.env.META_USER;
     }
 
     _initTransport() {
         const emailTransportConfig = {
-            host: "smtp.meta.ua",
-            port: "465",
+            host: process.env.META_HOST,
+            port: process.env.META_PORT,
             auth: {
-                user: "yelyzaveta_demchenko@meta.ua",
-                pass: "VladDergun05"
+                user: process.env.META_USER,
+                pass: process.env.META_PASS
             }
         };
-        console.log(emailTransportConfig);
+
         return nodemailer.createTransport(emailTransportConfig);
     }
 
     async _send(template, subject) {
-        console.log(template);
-        // const html = pug.renderFile(path.join(process.cwd(), "views", "emails", `${template}.pug`))
+        const html = pug.renderFile(path.join(process.cwd(), "views", "emails", `${template}.pug`), {
+            email: this.to,
+            url: this.url,
+            subject
+        })
 
         const emailConfig = {
             from: this.from,
             to: this.to,
             subject,
-            // html,
-            // text: convert(html),
-            text: "!",
+            html,
+            text: convert(html),
         }
-        console.log("emailConfig", emailConfig);
+
         await this._initTransport().sendMail(emailConfig)
     }
 

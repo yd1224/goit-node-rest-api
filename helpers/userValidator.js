@@ -20,3 +20,12 @@ export const logInUserDataValidator = joiValidator((data) =>
     })
     .validate(data)
 );
+
+export const verifyUserValidator = joiValidator((data) =>
+  Joi.object()
+    .options({ abortEarly: false })
+    .keys({
+      email: Joi.string().email().required(),
+    })
+    .validate(data)
+);

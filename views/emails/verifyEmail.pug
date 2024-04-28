@@ -3,7 +3,7 @@ extends layouts/base
 block content 
     tr
         td.wrapper
-            p Hi, #{name}
+            p Hi, #{email}
             p Please, verify your email.
             table.btn.btn-primary(role="presentation", border="0", cellpadding="0", cellspacing="0")
                 tbody
@@ -13,6 +13,4 @@ block content
                                 tbody
                                     tr
                                         td
-                                            a(href=url, target="_blank") Call To Action
-            p This is a really simple email template. It&apos;s sole purpose is to get the recipient to click the button with no distractions.
-            p Good luck! Hope it works.
+                                            a(href=url, target="_blank") Verify
