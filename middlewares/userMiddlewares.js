@@ -47,6 +47,8 @@ export const protect = catchAsync(async (req, res, next) => {
 
   const currentUser = await getUserByIdService(userId);
 
+  if (currentUser.token !== token) throw HttpError(401, "Unauthorized");
+
   if (!currentUser) throw HttpError(401, "Unauthorized");
 
   req.user = currentUser;

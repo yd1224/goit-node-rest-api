@@ -7,6 +7,7 @@ import { errorHandler } from "./controllers/errorController.js";
 import mongoose from "mongoose";
 import usersRouter from "./routes/usersRouter.js";
 import { viewRouter } from "./routes/viewRouter.js";
+import { Server } from "socket.io";
 
 dotenv.config();
 
@@ -52,6 +53,20 @@ app.all("*", (req, res) => {
 app.use(errorHandler);
 /////////////////////////////////////
 const port = process.env.PORT ? +process.env.PORT : 3000;
-app.listen(port, () => {
+
+const server = app.listen(port, () => {
   console.log("Server is running. Use our API on port: 3000");
 });
+
+const io = new Server(server)
+
+io.on("connection", (socket) => {
+  console.log(">>>>>>>>>>>>>>>>>>>>>.");
+
+  socket.emit("message", { msg: "Hello" });
+
+  socket.on("custom", (data) => {
+    console.log({ data });
+  })
+
+})
