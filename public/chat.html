@@ -79,14 +79,14 @@
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io.connect("http://localhost:3001");
+    const socket = io.connect("http://localhost:3000");
 
-    // socket.on('message', ({ msg }) => {
+    // socket.on("message", ({ msg }) => {
     //   console.log(msg);
 
-    //   socket.emit('custom', { msg: 'Hello from client!!' });
+    //   socket.emit("custom", { msg: "Hello from client!!" });
     // });
-
+    //////////////////////////////
     document.getElementById("msgForm").addEventListener("submit", (event) => {
       event.preventDefault();
 
@@ -104,7 +104,7 @@
     });
 
     socket.on("connect", () => {
-      socket.emit("message", "new user connected..");
+      socket.emit("message", "new user connected");
     });
   </script>
 </html>

@@ -60,13 +60,41 @@ const server = app.listen(port, () => {
 
 const io = new Server(server)
 
-io.on("connection", (socket) => {
-  console.log(">>>>>>>>>>>>>>>>>>>>>.");
+// io.on("connection", (socket) => {
+//   console.log(">>>>>>>>>>>>>>>>>>>>>.");
 
-  socket.emit("message", { msg: "Hello" });
+//   socket.emit("message", { msg: "Hello from back" });
 
-  socket.on("custom", (data) => {
-    console.log({ data });
+//   socket.on("custom", (data) => {
+//     console.log({ data });
+//   })
+
+// })
+
+
+
+////////////////////////////
+// io.on("connection", (socket) => {
+//   socket.on("message", (msg) => {
+//     io.emit("message", msg)
+//   })
+// });
+
+
+
+////////////////////////////
+const nodeNameSpace = io.of("/nodeNameSpace")
+
+nodeNameSpace.on("connnection", (socket) => {
+  socket.on("join", (data) => {
+    socket.join(data.room)
+
+    const msg = `${data.nick ? " " : "New user "} joined ${data.room} room`
+
+    nodeNameSpace.in(data.room).emit("message", { msg, nick: data.nick })
   })
 
+  socket.on("message", (data) => {
+    nodeNameSpace.in(data.room).emit("message", { msg: data.msg, nick: data.nick })
+  })
 })
